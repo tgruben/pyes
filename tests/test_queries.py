@@ -187,6 +187,13 @@ class QuerySearchTestCase(ESTestCase):
         self.assertEquals(q, HasChildQuery(type="test-type2", query=TermQuery("name", "data1")))
         self.assertNotEquals(q, HasChildQuery(type="test-type2", query=TermQuery("name", "data2")))
 
+    def test_HasParentQuery(self):
+        q = HasParentQuery(type=self.document_type, query=TermQuery("name", "data1"))
+        resultset = self.conn.search(query=q, indices=self.index_name)
+        self.assertEquals(resultset.total, 1)
+        self.assertEquals(q, HasParentQuery(type=self.document_type, query=TermQuery("name", "data1")))
+        self.assertNotEquals(q, HasParentQuery(type=self.document_type, query=TermQuery("name", "data2")))
+
     def test_RegexTermQuery(self):
         # Don't run this test, because it depends on the RegexTermQuery
         # feature which is not currently in elasticsearch trunk.
