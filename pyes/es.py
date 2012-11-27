@@ -7,13 +7,13 @@ from .helpers import SettingsBuilder
 from .models import ElasticSearchModel, DotDict, ListBulker
 
 try:
-    # For Python >= 2.6
-    import json
-    from json import JSONDecoder, JSONEncoder
-except ImportError:
     # For Python < 2.6 or people using a newer version of simplejson
     import simplejson as json
     from simplejson import JSONDecoder, JSONEncoder
+except ImportError:
+    # For Python >= 2.6
+    import json
+    from json import JSONDecoder, JSONEncoder
 
 import random
 from datetime import date, datetime
@@ -256,7 +256,7 @@ class ES(object):
         for server in self.servers:
             if isinstance(server, (tuple, list)):
                 if len(list(server)) != 3:
-                    raise RuntimeError("Invalid server definition: \"%s\"" % server)
+                    raise RuntimeError("Invalid server definition: \"%s\"" % repr(server))
                 _type, host, port = server
                 server = urlparse('%s://%s:%s' % (_type, host, port))
                 check_format(server)
@@ -1690,7 +1690,7 @@ class ResultSet(object):
             self._current_item += 1
             return self.model(self.connection, res)
 
-        if self.iterpos == self.total:
+        if (self.start + self.iterpos) == self.total:
             raise StopIteration
         self._do_search(auto_increment=True)
         self.iterpos = 0
